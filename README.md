@@ -3,7 +3,7 @@
 This is a forked version of the original PS4 Rich Presence for Discord application, improved Windows integration.
 
 ## Credits
-This application is based on the work by [Tustin](https://github.com/Tustin/PS4-Rich-Presence-for-Discord). All credit for the original concept and implementation goes to them.
+This application is based on the work by zorua. All credit for the original concept and implementation goes to them.
 
 ## Changes in this Fork
 - Windows-native WPF application with proper system tray support
