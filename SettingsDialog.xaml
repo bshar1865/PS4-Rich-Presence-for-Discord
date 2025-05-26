@@ -24,8 +24,7 @@
 
         <!-- PS4 IP -->
         <TextBlock Text="PS4 IP:" Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,10,10"/>
-        <TextBox x:Name="IPTextBox" Grid.Row="0" Grid.Column="1" Margin="0,0,10,10"/>
-        <Button Content="Auto Detect" Grid.Row="0" Grid.Column="2" Width="80" Click="AutoDetect_Click" Margin="0,0,0,10"/>
+        <TextBox x:Name="IPTextBox" Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" Margin="0,0,0,10"/>
 
         <!-- Update Interval -->
         <TextBlock Text="Update Interval (seconds):" Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,10,10"/>

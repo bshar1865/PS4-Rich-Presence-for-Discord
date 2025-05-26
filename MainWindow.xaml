@@ -11,7 +11,6 @@
             <MenuItem Header="Show Window" Click="ShowWindow_Click"/>
             <Separator/>
             <MenuItem Header="Connect" Click="Connect_Click"/>
-            <MenuItem Header="Disconnect" Click="Disconnect_Click"/>
             <Separator/>
             <MenuItem Header="Exit" Click="Exit_Click"/>
         </ContextMenu>
@@ -26,9 +25,15 @@
         </Grid.RowDefinitions>
 
         <!-- Status Panel -->
-        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,10">
-            <TextBlock x:Name="PS4Status" Text="PS4: Disconnected" Margin="0,0,20,0"/>
-            <TextBlock x:Name="DiscordStatus" Text="Discord: Disconnected"/>
+        <StackPanel Grid.Row="0" Orientation="Vertical" Margin="0,0,0,10">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock x:Name="PS4Status" Text="PS4: Disconnected" Grid.Column="0" Margin="0,0,10,0" VerticalAlignment="Center"/>
+                <TextBlock x:Name="DiscordStatus" Text="Discord: Disconnected" Grid.Column="1" Margin="10,0,0,0" VerticalAlignment="Center"/>
+            </Grid>
         </StackPanel>
 
         <!-- Game Info -->
@@ -42,6 +47,7 @@
 
         <!-- Buttons -->
         <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Center">
+            <Button x:Name="ConnectButton" Content="Connect PS4" Click="ConnectButton_Click" Width="100" Margin="0,0,10,0"/>
             <Button Content="Settings" Click="Settings_Click" Width="100" Margin="0,0,10,0"/>
             <Button Content="Edit Game Info" Click="EditGame_Click" Width="100"/>
         </StackPanel>

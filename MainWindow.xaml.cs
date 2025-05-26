@@ -8,6 +8,7 @@ using System.Net.Sockets;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Media.Imaging;
 using DiscordRPC;
 using Newtonsoft.Json;
@@ -134,15 +135,120 @@ namespace PS4RichPresence
         {
             if (!string.IsNullOrEmpty(_config.IP))
             {
-                if (TestPS4Connection(_config.IP))
-                {
-                    _ps4Connected = true;
-                    PS4Status.Text = $"PS4: Connected to {_config.IP}";
-                    return;
-                }
+                ConnectToPS4(_config.IP);
+            }
+            else
+            {
+                _ps4Connected = false;
+                PS4Status.Text = "PS4: Disconnected";
             }
 
+            // Update connect button text
+            var connectButton = this.FindName("ConnectButton") as System.Windows.Controls.Button;
+            if (connectButton != null)
+            {
+                connectButton.Content = _ps4Connected ? "Disconnect PS4" : "Connect PS4";
+            }
+        }
+
+        private bool ConnectToPS4(string ip)
+        {
+            try
+            {
+                if (TestPS4Connection(ip))
+                {
+                    _ps4Connected = true;
+                    _config.IP = ip;
+                    SaveConfig();
+                    PS4Status.Text = $"PS4: Connected to {ip}";
+                    return true;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to connect to PS4: {ex.Message}", "Connection Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+
+            _ps4Connected = false;
             PS4Status.Text = "PS4: Disconnected";
+            return false;
+        }
+
+        private async void ConnectButton_Click(object sender, RoutedEventArgs e)
+        {
+            var button = sender as System.Windows.Controls.Button;
+            if (button != null)
+            {
+                if (_ps4Connected)
+                {
+                    // Disconnect
+                    _ps4Connected = false;
+                    // Don't clear the IP address anymore
+                    //_config.IP = "";
+                    SaveConfig();
+                    PS4Status.Text = "PS4: Disconnected";
+                    GameName.Text = "No game running";
+                    GameImage.Source = null;
+                    _discordClient?.ClearPresence();
+                    button.Content = "Connect PS4";
+                }
+                else
+                {
+                    // Connect
+                    button.IsEnabled = false;
+                    button.Content = "Connecting...";
+
+                    try
+                    {
+                        // Only try the saved IP if available
+                        if (!string.IsNullOrEmpty(_config.IP))
+                        {
+                            if (ConnectToPS4(_config.IP))
+                            {
+                                button.Content = "Disconnect PS4";
+                                // Trigger an immediate update
+                                await Task.Run(() => Dispatcher.Invoke(UpdatePresence));
+                            }
+                            else
+                            {
+                                button.Content = "Connect PS4";
+                            }
+                        }
+                        else
+                        {
+                            // If no saved IP, show settings dialog
+                            Connect_Click(sender, e);
+                            if (_ps4Connected)
+                            {
+                                button.Content = "Disconnect PS4";
+                                // Trigger an immediate update
+                                await Task.Run(() => Dispatcher.Invoke(UpdatePresence));
+                            }
+                            else
+                            {
+                                button.Content = "Connect PS4";
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show($"Error connecting: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                        button.Content = "Connect PS4";
+                    }
+
+                    button.IsEnabled = true;
+                }
+            }
+        }
+
+        private string GetLocalIPAddress()
+        {
+            using (var socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, 0))
+            {
+                socket.Connect("8.8.8.8", 65530);
+                var endPoint = socket.LocalEndPoint as IPEndPoint;
+                return endPoint?.Address.ToString() ?? "127.0.0.1";
+            }
         }
 
         private bool TestPS4Connection(string ip)
@@ -364,12 +470,6 @@ namespace PS4RichPresence
 
         private void Connect_Click(object sender, RoutedEventArgs e)
         {
-            if (_ps4Connected)
-            {
-                MessageBox.Show("Already connected to PS4", "Connection", MessageBoxButton.OK, MessageBoxImage.Information);
-                return;
-            }
-
             var settings = new SettingsDialog(_config);
             if (settings.ShowDialog() == true)
             {
@@ -377,23 +477,6 @@ namespace PS4RichPresence
                 SaveConfig();
                 InitializePS4();
             }
-        }
-
-        private void Disconnect_Click(object sender, RoutedEventArgs e)
-        {
-            if (!_ps4Connected)
-            {
-                MessageBox.Show("Not connected to PS4", "Connection", MessageBoxButton.OK, MessageBoxImage.Information);
-                return;
-            }
-
-            _ps4Connected = false;
-            _config.IP = "";
-            SaveConfig();
-            PS4Status.Text = "PS4: Disconnected";
-            GameName.Text = "No game running";
-            GameImage.Source = null;
-            _discordClient?.ClearPresence();
         }
     }
 

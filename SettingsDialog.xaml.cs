@@ -116,5 +116,44 @@ namespace PS4RichPresence
         {
             DialogResult = false;
         }
+
+        private void Connect_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var ip = IPTextBox.Text.Trim();
+                if (string.IsNullOrEmpty(ip))
+                {
+                    MessageBox.Show("Please enter an IP address.", "Connection", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+
+                var button = sender as System.Windows.Controls.Button;
+                if (button != null)
+                {
+                    button.IsEnabled = false;
+                    button.Content = "Connecting...";
+                }
+
+                if (TestPS4Connection(ip))
+                {
+                    MessageBox.Show($"Successfully connected to PS4 at {ip}", "Connection", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+                else
+                {
+                    MessageBox.Show($"Could not connect to PS4 at {ip}", "Connection", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+
+                if (button != null)
+                {
+                    button.IsEnabled = true;
+                    button.Content = "Connect";
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error connecting to PS4: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
     }
 } 
