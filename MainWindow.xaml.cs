@@ -26,6 +26,7 @@ namespace PS4RichPresence
         private readonly string _configPath = "ps4rpd_config.json";
         private readonly HttpClient _httpClient;
         private bool _isShuttingDown;
+        private Timestamps _sessionTimestamp;
 
         public MainWindow()
         {
@@ -37,6 +38,9 @@ namespace PS4RichPresence
                 InitializeDiscord();
                 InitializeTimer();
                 InitializePS4();
+
+                // Initialize session timestamp
+                _sessionTimestamp = null;
 
                 // Handle window closing to minimize to tray
                 Closing += (s, e) =>
@@ -161,6 +165,11 @@ namespace PS4RichPresence
                     _config.IP = ip;
                     SaveConfig();
                     PS4Status.Text = $"PS4: Connected to {ip}";
+                    // Initialize timestamp when connecting
+                    if (_sessionTimestamp == null && _config.ShowTimer)
+                    {
+                        _sessionTimestamp = Timestamps.Now;
+                    }
                     return true;
                 }
             }
@@ -183,13 +192,12 @@ namespace PS4RichPresence
                 {
                     // Disconnect
                     _ps4Connected = false;
-                    // Don't clear the IP address anymore
-                    //_config.IP = "";
                     SaveConfig();
                     PS4Status.Text = "PS4: Disconnected";
                     GameName.Text = "No game running";
                     GameImage.Source = null;
                     _discordClient?.ClearPresence();
+                    _sessionTimestamp = null;  // Reset timestamp on disconnect
                     button.Content = "Connect PS4";
                 }
                 else
@@ -302,6 +310,12 @@ namespace PS4RichPresence
                         }
                     }
 
+                    // Initialize timestamp if not set and timer is enabled
+                    if (_sessionTimestamp == null && _config.ShowTimer)
+                    {
+                        _sessionTimestamp = Timestamps.Now;
+                    }
+
                     _discordClient.SetPresence(new RichPresence
                     {
                         State = gameInfo.Name,
@@ -309,7 +323,7 @@ namespace PS4RichPresence
                         {
                             LargeImageKey = gameInfo.ImageUrl
                         },
-                        Timestamps = _config.ShowTimer ? Timestamps.Now : null
+                        Timestamps = _config.ShowTimer ? _sessionTimestamp : null
                     });
                 }
             }
