@@ -1,57 +1,228 @@
-<Window x:Class="PS4RichPresence.SettingsDialog"
+<local:BaseWindow x:Class="PS4RichPresence.SettingsDialog"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="clr-namespace:PS4RichPresence"
         Title="Settings" Height="400" Width="400"
-        WindowStartupLocation="CenterOwner">
-    <Grid Margin="10">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/>
-        </Grid.RowDefinitions>
+        WindowStartupLocation="CenterOwner"
+        WindowStyle="None"
+        AllowsTransparency="True"
+        Background="{DynamicResource BackgroundBrush}"
+        ResizeMode="NoResize">
+    <Border BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="30"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <!-- Custom Title Bar -->
+            <Grid Grid.Row="0" Background="{DynamicResource WindowTitleBrush}"
+                  MouseLeftButtonDown="TitleBar_MouseLeftButtonDown">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Window Title -->
+                <TextBlock Grid.Column="1" 
+                         Text="Settings"
+                         Foreground="{DynamicResource WindowTitleTextBrush}"
+                         VerticalAlignment="Center"
+                         Margin="5,0"/>
+
+                <!-- Close Button -->
+                <Button Grid.Column="2" Width="45" Height="30"
+                        Click="CloseButton_Click"
+                        Background="Transparent"
+                        BorderThickness="0">
+                    <Path Data="M0,0 L8,8 M0,8 L8,0" 
+                          Stroke="{DynamicResource WindowTitleTextBrush}"
+                          StrokeThickness="1"
+                          HorizontalAlignment="Center"
+                          VerticalAlignment="Center"/>
+                </Button>
+            </Grid>
+
+            <!-- Main Content -->
+            <Grid Grid.Row="1" Margin="10">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <!-- Settings Content -->
+                <Grid Grid.Row="0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
         
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="Auto"/>
-        </Grid.ColumnDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
 
-        <!-- PS4 IP -->
-        <TextBlock Text="PS4 IP:" Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,10,10"/>
-        <TextBox x:Name="IPTextBox" Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" Margin="0,0,0,10"/>
+                    <!-- PS4 IP -->
+                    <TextBlock Text="PS4 IP:" Grid.Row="0" Grid.Column="0" 
+                             VerticalAlignment="Center" Margin="0,0,10,10"
+                             Foreground="{DynamicResource ForegroundBrush}"/>
+                    <TextBox x:Name="IPTextBox" Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" Margin="0,0,0,10"
+                            Background="{DynamicResource ButtonBackgroundBrush}"
+                            Foreground="{DynamicResource ForegroundBrush}"
+                            BorderBrush="{DynamicResource BorderBrush}"/>
 
-        <!-- Update Interval -->
-        <TextBlock Text="Update Interval (seconds):" Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,10,10"/>
-        <TextBox x:Name="IntervalTextBox" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" Margin="0,0,0,10"/>
+                    <!-- Update Interval -->
+                    <TextBlock Text="Update Interval (seconds):" Grid.Row="1" Grid.Column="0" 
+                             VerticalAlignment="Center" Margin="0,0,10,10"
+                             Foreground="{DynamicResource ForegroundBrush}"/>
+                    <TextBox x:Name="IntervalTextBox" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" Margin="0,0,0,10"
+                            Background="{DynamicResource ButtonBackgroundBrush}"
+                            Foreground="{DynamicResource ForegroundBrush}"
+                            BorderBrush="{DynamicResource BorderBrush}"/>
 
-        <!-- Hibernate Time -->
-        <TextBlock Text="Hibernate Time (seconds):" Grid.Row="2" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,10,10"/>
-        <TextBox x:Name="HibernateTimeTextBox" Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2" Margin="0,0,0,10"/>
+                    <!-- Hibernate Time -->
+                    <TextBlock Text="Hibernate Time (seconds):" Grid.Row="2" Grid.Column="0" 
+                             VerticalAlignment="Center" Margin="0,0,10,10"
+                             Foreground="{DynamicResource ForegroundBrush}"/>
+                    <TextBox x:Name="HibernateTimeTextBox" Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2" Margin="0,0,0,10"
+                            Background="{DynamicResource ButtonBackgroundBrush}"
+                            Foreground="{DynamicResource ForegroundBrush}"
+                            BorderBrush="{DynamicResource BorderBrush}"/>
 
-        <!-- Checkboxes -->
-        <CheckBox x:Name="RetroCoversCheckBox" Content="Use Retro Game Covers" 
-                  Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3" Margin="0,0,0,5"/>
+                    <!-- Checkboxes -->
+                    <CheckBox x:Name="RetroCoversCheckBox" Content="Use Retro Game Covers" 
+                              Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3" Margin="0,0,0,5"
+                              Foreground="{DynamicResource ForegroundBrush}"/>
         
-        <CheckBox x:Name="HibernateCheckBox" Content="Hibernate Mode" 
-                  Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="3" Margin="0,0,0,5"/>
+                    <CheckBox x:Name="HibernateCheckBox" Content="Hibernate Mode" 
+                              Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="3" Margin="0,0,0,5"
+                              Foreground="{DynamicResource ForegroundBrush}"/>
         
-        <CheckBox x:Name="ShowPresenceOnHomeCheckBox" Content="Show Presence on Home Screen" 
-                  Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="3" Margin="0,0,0,5"/>
+                    <CheckBox x:Name="ShowPresenceOnHomeCheckBox" Content="Show Presence on Home Screen" 
+                              Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="3" Margin="0,0,0,5"
+                              Foreground="{DynamicResource ForegroundBrush}"/>
         
-        <CheckBox x:Name="ShowTimerCheckBox" Content="Show Timer" 
-                  Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="3" Margin="0,0,0,5"/>
+                    <CheckBox x:Name="ShowTimerCheckBox" Content="Show Timer" 
+                              Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="3" Margin="0,0,0,5"
+                              Foreground="{DynamicResource ForegroundBrush}"/>
 
-        <!-- Buttons -->
-        <StackPanel Grid.Row="8" Grid.Column="0" Grid.ColumnSpan="3" 
-                    Orientation="Horizontal" HorizontalAlignment="Right">
-            <Button Content="Save" Width="80" Click="SaveButton_Click" Margin="0,0,10,0"/>
-            <Button Content="Cancel" Width="80" Click="CancelButton_Click"/>
-        </StackPanel>
-    </Grid>
-</Window> 
+                    <CheckBox x:Name="RunOnStartupCheckBox" Content="Run on Windows Startup" 
+                              Grid.Row="7" Grid.Column="0" Grid.ColumnSpan="3" Margin="0,0,0,10"
+                              Foreground="{DynamicResource ForegroundBrush}"/>
+
+                    <!-- Theme Selection -->
+                    <TextBlock Text="Theme:" Grid.Row="8" Grid.Column="0" 
+                             VerticalAlignment="Center" Margin="0,0,10,0"
+                             Foreground="{DynamicResource ForegroundBrush}"/>
+                    <ComboBox x:Name="ThemeComboBox" Grid.Row="8" Grid.Column="1" Grid.ColumnSpan="2">
+                        <ComboBox.Template>
+                            <ControlTemplate TargetType="ComboBox">
+                                <Grid>
+                                    <ToggleButton x:Name="ToggleButton" 
+                                                Background="{TemplateBinding Background}"
+                                                BorderBrush="{TemplateBinding BorderBrush}"
+                                                BorderThickness="{TemplateBinding BorderThickness}"
+                                                IsChecked="{Binding Path=IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}">
+                                        <ToggleButton.Template>
+                                            <ControlTemplate TargetType="ToggleButton">
+                                                <Border Background="{TemplateBinding Background}"
+                                                        BorderBrush="{TemplateBinding BorderBrush}"
+                                                        BorderThickness="{TemplateBinding BorderThickness}">
+                                                    <Grid>
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="*"/>
+                                                            <ColumnDefinition Width="20"/>
+                                                        </Grid.ColumnDefinitions>
+                                                        <ContentPresenter Grid.Column="0"
+                                                                        Content="{Binding Path=SelectedItem.Content, RelativeSource={RelativeSource AncestorType={x:Type ComboBox}}}"
+                                                                        Margin="5,2"
+                                                                        TextElement.Foreground="{DynamicResource ForegroundBrush}"/>
+                                                        <Path Grid.Column="1" 
+                                                              Data="M0,0 L4,4 L8,0" 
+                                                              Stroke="{DynamicResource ForegroundBrush}"
+                                                              StrokeThickness="1"
+                                                              HorizontalAlignment="Center"
+                                                              VerticalAlignment="Center"/>
+                                                    </Grid>
+                                                </Border>
+                                            </ControlTemplate>
+                                        </ToggleButton.Template>
+                                    </ToggleButton>
+                                    <Popup x:Name="PART_Popup"
+                                           AllowsTransparency="True"
+                                           IsOpen="{Binding Path=IsDropDownOpen, RelativeSource={RelativeSource TemplatedParent}}"
+                                           Placement="Bottom"
+                                           PlacementTarget="{Binding ElementName=ToggleButton}">
+                                        <Border Background="{DynamicResource ButtonBackgroundBrush}"
+                                                BorderBrush="{DynamicResource ButtonBorderBrush}"
+                                                BorderThickness="1">
+                                            <ScrollViewer SnapsToDevicePixels="True">
+                                                <ItemsPresenter KeyboardNavigation.DirectionalNavigation="Contained"/>
+                                            </ScrollViewer>
+                                        </Border>
+                                    </Popup>
+                                </Grid>
+                            </ControlTemplate>
+                        </ComboBox.Template>
+                        <ComboBox.Style>
+                            <Style TargetType="ComboBox">
+                                <Setter Property="Background" Value="{DynamicResource ButtonBackgroundBrush}"/>
+                                <Setter Property="Foreground" Value="{DynamicResource ForegroundBrush}"/>
+                                <Setter Property="BorderBrush" Value="{DynamicResource ButtonBorderBrush}"/>
+                                <Style.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Background" Value="{DynamicResource ButtonHoverBrush}"/>
+                                    </Trigger>
+                                    <Trigger Property="IsDropDownOpen" Value="True">
+                                        <Setter Property="Background" Value="{DynamicResource ButtonHoverBrush}"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </ComboBox.Style>
+                        <ComboBox.ItemContainerStyle>
+                            <Style TargetType="ComboBoxItem">
+                                <Setter Property="Background" Value="Transparent"/>
+                                <Setter Property="Foreground" Value="{DynamicResource ForegroundBrush}"/>
+                                <Setter Property="Padding" Value="5,2"/>
+                                <Style.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Background" Value="{DynamicResource ButtonHoverBrush}"/>
+                                    </Trigger>
+                                    <Trigger Property="IsSelected" Value="True">
+                                        <Setter Property="Background" Value="{DynamicResource ButtonHoverBrush}"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </ComboBox.ItemContainerStyle>
+                        <ComboBoxItem Content="Light"/>
+                        <ComboBoxItem Content="Dark"/>
+                    </ComboBox>
+                </Grid>
+
+                <!-- Buttons at the bottom -->
+                <StackPanel Grid.Row="1" 
+                          Orientation="Horizontal" 
+                          HorizontalAlignment="Right"
+                          Margin="0,20,0,0">
+                    <Button Content="Save" Width="80" Click="SaveButton_Click" Margin="0,0,10,0"
+                            Background="{DynamicResource ButtonBackgroundBrush}"
+                            Foreground="{DynamicResource ForegroundBrush}"
+                            BorderBrush="{DynamicResource ButtonBorderBrush}"/>
+                    <Button Content="Cancel" Width="80" Click="CancelButton_Click"
+                            Background="{DynamicResource ButtonBackgroundBrush}"
+                            Foreground="{DynamicResource ForegroundBrush}"
+                            BorderBrush="{DynamicResource ButtonBorderBrush}"/>
+                </StackPanel>
+            </Grid>
+        </Grid>
+    </Border>
+</local:BaseWindow> 

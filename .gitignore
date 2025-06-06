@@ -1,16 +1,49 @@
-ps4rpdConfig.txt
-bin/
-obj/
+# Git configuration
+* text=auto
+
+# Build results
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+[Ww][Ii][Nn]32/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+bld/
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+
+# Visual Studio files
 .vs/
 *.user
-*.log
-dist/
+*.userosscache
 *.suo
 *.cache
 *.pdb
-packages/
+*.tmp
+*.log
+.vscode/
+.idea/
+*.sln.docstates
+launchSettings.json
+
+# ReSharper
 _ReSharper*/
-*.resharper
+*.[Rr]e[Ss]harper
+*.DotSettings.user
+
+# Application specific
+ps4rpd_config.json
+ps4rpdConfig.txt
+startup.log
+error.log
+dist/
+packages/
+TestResults/
 [Tt]est[Rr]esult*
 [Bb]uild[Ll]og.*
 *.[Pp]ublish.xml

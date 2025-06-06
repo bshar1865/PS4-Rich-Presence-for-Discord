@@ -1,62 +1,205 @@
-<Window x:Class="PS4RichPresence.MainWindow"
+<local:BaseWindow x:Class="PS4RichPresence.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:tb="http://www.hardcodet.net/taskbar"
+        xmlns:local="clr-namespace:PS4RichPresence"
         Title="PS4 Rich Presence" Height="600" Width="400"
         Icon="/app.ico"
-        WindowStartupLocation="CenterScreen">
+        WindowStartupLocation="CenterScreen"
+        WindowStyle="None"
+        AllowsTransparency="True"
+        Background="{DynamicResource BackgroundBrush}"
+        ResizeMode="CanMinimize">
     
     <Window.Resources>
         <ContextMenu x:Key="TrayMenu">
-            <MenuItem Header="Show Window" Click="ShowWindow_Click"/>
+            <MenuItem Header="Show Window" Click="ShowWindow_Click"
+                      Background="{DynamicResource BackgroundBrush}"
+                      Foreground="{DynamicResource ForegroundBrush}"/>
             <Separator/>
-            <MenuItem Header="Connect" Click="Connect_Click"/>
+            <MenuItem Header="Connect" Click="Connect_Click"
+                      Background="{DynamicResource BackgroundBrush}"
+                      Foreground="{DynamicResource ForegroundBrush}"/>
             <Separator/>
-            <MenuItem Header="Exit" Click="Exit_Click"/>
+            <MenuItem Header="Exit" Click="Exit_Click"
+                      Background="{DynamicResource BackgroundBrush}"
+                      Foreground="{DynamicResource ForegroundBrush}"/>
         </ContextMenu>
+
+        <!-- Window Button Styles -->
+        <Style x:Key="WindowButtonStyle" TargetType="Button">
+            <Setter Property="Width" Value="45"/>
+            <Setter Property="Height" Value="30"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="MinimizeButtonStyle" TargetType="Button" BasedOn="{StaticResource WindowButtonStyle}">
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#E5E5E5"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="CloseButtonStyle" TargetType="Button" BasedOn="{StaticResource WindowButtonStyle}">
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#E81123"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
     </Window.Resources>
 
-    <Grid Margin="10">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/>
-        </Grid.RowDefinitions>
+    <Border BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="30"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
 
-        <!-- Status Panel -->
-        <StackPanel Grid.Row="0" Orientation="Vertical" Margin="0,0,0,10">
-            <Grid>
+            <!-- Custom Title Bar -->
+            <Grid Grid.Row="0" Background="{DynamicResource WindowTitleBrush}"
+                  MouseLeftButtonDown="TitleBar_MouseLeftButtonDown">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
-                <TextBlock x:Name="PS4Status" Text="PS4: Disconnected" Grid.Column="0" Margin="0,0,10,0" VerticalAlignment="Center"/>
-                <TextBlock x:Name="DiscordStatus" Text="Discord: Disconnected" Grid.Column="1" Margin="10,0,0,0" VerticalAlignment="Center"/>
+
+                <!-- Window Icon -->
+                <Image Grid.Column="0" Source="/app.ico" Width="16" Height="16" Margin="5,0"/>
+                
+                <!-- Window Title -->
+                <TextBlock Grid.Column="1" 
+                         Text="PS4 Rich Presence"
+                         Foreground="{DynamicResource WindowTitleTextBrush}"
+                         VerticalAlignment="Center"
+                         Margin="5,0"/>
+
+                <!-- Window Buttons -->
+                <Button Grid.Column="2"
+                        Click="MinimizeButton_Click"
+                        Style="{StaticResource MinimizeButtonStyle}">
+                    <Path Data="M0,0 L8,0" 
+                          Stroke="{DynamicResource ForegroundBrush}"
+                          StrokeThickness="1"
+                          HorizontalAlignment="Center"
+                          VerticalAlignment="Center">
+                        <Path.Style>
+                            <Style TargetType="Path">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsMouseOver, RelativeSource={RelativeSource AncestorType=Button}}" Value="True">
+                                        <Setter Property="Stroke" Value="White"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Path.Style>
+                    </Path>
+                </Button>
+                <Button Grid.Column="4"
+                        Click="CloseButton_Click"
+                        Style="{StaticResource CloseButtonStyle}">
+                    <Path Data="M0,0 L8,8 M0,8 L8,0" 
+                          Stroke="{DynamicResource ForegroundBrush}"
+                          StrokeThickness="1"
+                          HorizontalAlignment="Center"
+                          VerticalAlignment="Center">
+                        <Path.Style>
+                            <Style TargetType="Path">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsMouseOver, RelativeSource={RelativeSource AncestorType=Button}}" Value="True">
+                                        <Setter Property="Stroke" Value="White"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Path.Style>
+                    </Path>
+                </Button>
             </Grid>
-        </StackPanel>
 
-        <!-- Game Info -->
-        <TextBlock Grid.Row="1" x:Name="GameName" Text="No game running" 
-                   HorizontalAlignment="Center" Margin="0,0,0,10"/>
+            <!-- Main Content -->
+            <Grid Grid.Row="1" Margin="10">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
 
-        <!-- Game Image -->
-        <Border Grid.Row="2" BorderBrush="LightGray" BorderThickness="1" Margin="0,0,0,10">
-            <Image x:Name="GameImage" Stretch="Uniform"/>
-        </Border>
+                <!-- Status Panel -->
+                <StackPanel Grid.Row="0" Orientation="Vertical" Margin="0,0,0,10">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock x:Name="PS4Status" Text="PS4: Disconnected" Grid.Column="0" Margin="0,0,10,0" 
+                                VerticalAlignment="Center" Foreground="{DynamicResource ForegroundBrush}"/>
+                        <TextBlock x:Name="DiscordStatus" Text="Discord: Disconnected" Grid.Column="1" Margin="10,0,0,0" 
+                                VerticalAlignment="Center" Foreground="{DynamicResource ForegroundBrush}"/>
+                    </Grid>
+                </StackPanel>
 
-        <!-- Buttons -->
-        <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Center">
-            <Button x:Name="ConnectButton" Content="Connect PS4" Click="ConnectButton_Click" Width="100" Margin="0,0,10,0"/>
-            <Button Content="Settings" Click="Settings_Click" Width="100" Margin="0,0,10,0"/>
-            <Button Content="Edit Game Info" Click="EditGame_Click" Width="100"/>
-        </StackPanel>
+                <!-- Game Info -->
+                <TextBlock Grid.Row="1" x:Name="GameName" Text="No game running" 
+                            HorizontalAlignment="Center" Margin="0,0,0,10"
+                            Foreground="{DynamicResource ForegroundBrush}"/>
 
-        <!-- Tray Icon -->
-        <tb:TaskbarIcon x:Name="TrayIcon"
-                        IconSource="/app.ico"
-                        ToolTipText="PS4 Rich Presence"
-                        ContextMenu="{StaticResource TrayMenu}"
-                        TrayLeftMouseDown="TrayIcon_Click"/>
-    </Grid>
-</Window> 
+                <!-- Game Image -->
+                <Border Grid.Row="2" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" Margin="0,0,0,10">
+                    <Image x:Name="GameImage" Stretch="Uniform"/>
+                </Border>
+
+                <!-- Buttons -->
+                <StackPanel Grid.Row="3"
+                            Orientation="Horizontal"
+                            HorizontalAlignment="Center"
+                            Margin="0,10,0,0">
+                    <Button x:Name="ConnectButton"
+                            Content="Connect PS4"
+                            Width="100"
+                            Height="30"
+                            Click="ConnectButton_Click"
+                            Margin="0,0,10,0"
+                            Background="{DynamicResource ButtonBackgroundBrush}"
+                            Foreground="{DynamicResource ForegroundBrush}"
+                            BorderBrush="{DynamicResource ButtonBorderBrush}"/>
+                    <Button Content="Settings"
+                            Width="100"
+                            Height="30"
+                            Click="Settings_Click"
+                            Margin="0,0,10,0"
+                            Background="{DynamicResource ButtonBackgroundBrush}"
+                            Foreground="{DynamicResource ForegroundBrush}"
+                            BorderBrush="{DynamicResource ButtonBorderBrush}"/>
+                    <Button Content="Edit Game Info"
+                            Width="100"
+                            Height="30"
+                            Click="EditGame_Click"
+                            Background="{DynamicResource ButtonBackgroundBrush}"
+                            Foreground="{DynamicResource ForegroundBrush}"
+                            BorderBrush="{DynamicResource ButtonBorderBrush}"/>
+                </StackPanel>
+            </Grid>
+
+            <!-- Tray Icon -->
+            <tb:TaskbarIcon x:Name="TrayIcon"
+                            IconSource="/app.ico"
+                            ToolTipText="PS4 Rich Presence"
+                            ContextMenu="{StaticResource TrayMenu}"
+                            TrayLeftMouseDown="TrayIcon_Click"/>
+        </Grid>
+    </Border>
+</local:BaseWindow> 

@@ -4,6 +4,7 @@ using System.IO.Pipes;
 using System.Windows;
 using System.Threading;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace PS4RichPresence
 {
@@ -63,6 +64,39 @@ namespace PS4RichPresence
                 _mainWindow.Show();
 
                 base.OnStartup(e);
+
+                // Load theme from config if it exists
+                var configPath = "ps4rpd_config.json";
+                if (File.Exists(configPath))
+                {
+                    try
+                    {
+                        var config = JsonConvert.DeserializeObject<Config>(File.ReadAllText(configPath));
+                        if (config != null && !string.IsNullOrEmpty(config.Theme))
+                        {
+                            if (config.Theme == "Dark")
+                            {
+                                var darkTheme = Resources["DarkTheme"] as ResourceDictionary;
+                                if (darkTheme != null)
+                                {
+                                    Resources.MergedDictionaries[0] = darkTheme;
+                                }
+                            }
+                            else
+                            {
+                                var lightTheme = new ResourceDictionary
+                                {
+                                    Source = new Uri("pack://application:,,,/PS4RichPresence;component/Themes/LightTheme.xaml", UriKind.Absolute)
+                                };
+                                Resources.MergedDictionaries[0] = lightTheme;
+                            }
+                        }
+                    }
+                    catch (Exception)
+                    {
+                        // If there's an error loading the config, we'll just use the default light theme
+                    }
+                }
             }
             catch (Exception ex)
             {

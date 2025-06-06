@@ -13,10 +13,11 @@ using System.Windows.Media.Imaging;
 using DiscordRPC;
 using Newtonsoft.Json;
 using FluentFTP;
+using System.Windows.Input;
 
 namespace PS4RichPresence
 {
-    public partial class MainWindow : Window
+    public partial class MainWindow : BaseWindow
     {
         private DiscordRpcClient _discordClient;
         private Config _config;
@@ -67,6 +68,19 @@ namespace PS4RichPresence
             {
                 MessageBox.Show($"Error during startup: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 throw;
+            }
+        }
+
+        protected override void Window_Close(object sender, RoutedEventArgs e)
+        {
+            if (_isShuttingDown)
+            {
+                Application.Current.Shutdown();
+            }
+            else
+            {
+                Hide();
+                ShowTrayMessage("PS4 Rich Presence", "Application minimized to tray");
             }
         }
 
@@ -492,6 +506,49 @@ namespace PS4RichPresence
                 InitializePS4();
             }
         }
+
+        private void MinimizeButton_Click(object sender, RoutedEventArgs e)
+        {
+            WindowState = WindowState.Minimized;
+        }
+
+        private void MaximizeButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (WindowState == WindowState.Maximized)
+                WindowState = WindowState.Normal;
+            else
+                WindowState = WindowState.Maximized;
+        }
+
+        protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e)
+        {
+            base.OnMouseLeftButtonDown(e);
+            if (e.LeftButton == MouseButtonState.Pressed)
+            {
+                DragMove();
+            }
+        }
+
+        private void TitleBar_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.LeftButton == MouseButtonState.Pressed)
+            {
+                DragMove();
+            }
+        }
+
+        private void CloseButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (_isShuttingDown)
+            {
+                Application.Current.Shutdown();
+            }
+            else
+            {
+                Hide();
+                ShowTrayMessage("PS4 Rich Presence", "Application minimized to tray");
+            }
+        }
     }
 
     public class Config
@@ -505,6 +562,8 @@ namespace PS4RichPresence
         public bool ShowPresenceOnHome { get; set; }
         public bool ShowTimer { get; set; }
         public List<GameInfo> MappedGames { get; set; }
+        public string Theme { get; set; } = "Light"; // Light or Dark
+        public bool RunOnStartup { get; set; } = false;
     }
 
     public class GameInfo

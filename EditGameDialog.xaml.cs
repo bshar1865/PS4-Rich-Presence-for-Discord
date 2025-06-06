@@ -12,17 +12,13 @@ namespace PS4RichPresence
         public EditGameDialog(GameInfo gameInfo)
         {
             InitializeComponent();
-            GameInfo = new GameInfo
-            {
-                TitleId = gameInfo.TitleId,
-                Name = gameInfo.Name,
-                ImageUrl = gameInfo.ImageUrl
-            };
+            GameInfo = gameInfo;
 
             // Load current values
-            TitleIDTextBox.Text = GameInfo.TitleId;
-            GameNameTextBox.Text = GameInfo.Name;
-            ImageUrlTextBox.Text = GameInfo.ImageUrl;
+            TitleIdTextBox.Text = gameInfo.TitleId;
+            TitleIdTextBox.IsReadOnly = true;
+            GameNameTextBox.Text = gameInfo.Name;
+            ImageUrlTextBox.Text = gameInfo.ImageUrl;
 
             // Update preview
             UpdatePreview();

@@ -6,10 +6,13 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using FluentFTP;
+using System.Linq;
+using System.Windows.Input;
+using Microsoft.Win32;
 
 namespace PS4RichPresence
 {
-    public partial class SettingsDialog : Window
+    public partial class SettingsDialog : BaseWindow
     {
         public Config Config { get; private set; }
 
@@ -26,6 +29,19 @@ namespace PS4RichPresence
             HibernateCheckBox.IsChecked = config.Hibernate;
             ShowPresenceOnHomeCheckBox.IsChecked = config.ShowPresenceOnHome;
             ShowTimerCheckBox.IsChecked = config.ShowTimer;
+            ThemeComboBox.SelectedItem = ThemeComboBox.Items.Cast<ComboBoxItem>().FirstOrDefault(item => item.Content.ToString() == config.Theme);
+            RunOnStartupCheckBox.IsChecked = config.RunOnStartup;
+
+            // Check actual registry state
+            using (var key = Registry.CurrentUser.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Run"))
+            {
+                var registryValue = key?.GetValue("PS4 Rich Presence")?.ToString();
+                if (registryValue != null)
+                {
+                    RunOnStartupCheckBox.IsChecked = true;
+                    Config.RunOnStartup = true;
+                }
+            }
         }
 
         private async void AutoDetect_Click(object sender, RoutedEventArgs e)
@@ -103,6 +119,41 @@ namespace PS4RichPresence
                 Config.Hibernate = HibernateCheckBox.IsChecked ?? false;
                 Config.ShowPresenceOnHome = ShowPresenceOnHomeCheckBox.IsChecked ?? false;
                 Config.ShowTimer = ShowTimerCheckBox.IsChecked ?? false;
+                Config.Theme = ((ComboBoxItem)ThemeComboBox.SelectedItem).Content.ToString();
+                Config.RunOnStartup = RunOnStartupCheckBox.IsChecked ?? false;
+
+                // Handle startup registry
+                using (var key = Registry.CurrentUser.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Run", true))
+                {
+                    if (Config.RunOnStartup)
+                    {
+                        var exePath = System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName;
+                        key.SetValue("PS4 Rich Presence", exePath);
+                    }
+                    else
+                    {
+                        key.DeleteValue("PS4 Rich Presence", false);
+                    }
+                }
+
+                // Apply theme immediately
+                var app = (App)Application.Current;
+                if (Config.Theme == "Dark")
+                {
+                    var darkTheme = app.Resources["DarkTheme"] as ResourceDictionary;
+                    if (darkTheme != null)
+                    {
+                        app.Resources.MergedDictionaries[0] = darkTheme;
+                    }
+                }
+                else
+                {
+                    var lightTheme = new ResourceDictionary
+                    {
+                        Source = new Uri("pack://application:,,,/PS4RichPresence;component/Themes/LightTheme.xaml", UriKind.Absolute)
+                    };
+                    app.Resources.MergedDictionaries[0] = lightTheme;
+                }
 
                 DialogResult = true;
             }
@@ -154,6 +205,20 @@ namespace PS4RichPresence
             {
                 MessageBox.Show($"Error connecting to PS4: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
+        }
+
+        private void TitleBar_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.LeftButton == MouseButtonState.Pressed)
+            {
+                DragMove();
+            }
+        }
+
+        private void CloseButton_Click(object sender, RoutedEventArgs e)
+        {
+            DialogResult = false;
+            Close();
         }
     }
 } 
