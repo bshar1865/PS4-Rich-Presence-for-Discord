@@ -7,7 +7,6 @@ namespace PS4RichPresence
     {
         public BaseWindow()
         {
-            Style = (Style)Application.Current.Resources["CustomWindowStyle"];
             WindowStyle = WindowStyle.None;
             AllowsTransparency = true;
         }

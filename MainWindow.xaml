@@ -12,18 +12,51 @@
         ResizeMode="CanMinimize">
     
     <Window.Resources>
-        <ContextMenu x:Key="TrayMenu">
+        <ContextMenu x:Key="TrayMenu" 
+                     Background="{DynamicResource TrayBackgroundBrush}"
+                     BorderBrush="{DynamicResource TrayBorderBrush}"
+                     Foreground="{DynamicResource TrayForegroundBrush}">
             <MenuItem Header="Show Window" Click="ShowWindow_Click"
-                      Background="{DynamicResource BackgroundBrush}"
-                      Foreground="{DynamicResource ForegroundBrush}"/>
-            <Separator/>
+                      Background="{DynamicResource TrayBackgroundBrush}"
+                      Foreground="{DynamicResource TrayForegroundBrush}">
+                <MenuItem.Style>
+                    <Style TargetType="MenuItem">
+                        <Style.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="{DynamicResource TrayHoverBrush}"/>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </MenuItem.Style>
+            </MenuItem>
+            <Separator Background="{DynamicResource TrayBorderBrush}"/>
             <MenuItem Header="Connect" Click="Connect_Click"
-                      Background="{DynamicResource BackgroundBrush}"
-                      Foreground="{DynamicResource ForegroundBrush}"/>
-            <Separator/>
+                      Background="{DynamicResource TrayBackgroundBrush}"
+                      Foreground="{DynamicResource TrayForegroundBrush}">
+                <MenuItem.Style>
+                    <Style TargetType="MenuItem">
+                        <Style.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="{DynamicResource TrayHoverBrush}"/>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </MenuItem.Style>
+            </MenuItem>
+            <Separator Background="{DynamicResource TrayBorderBrush}"/>
             <MenuItem Header="Exit" Click="Exit_Click"
-                      Background="{DynamicResource BackgroundBrush}"
-                      Foreground="{DynamicResource ForegroundBrush}"/>
+                      Background="{DynamicResource TrayBackgroundBrush}"
+                      Foreground="{DynamicResource TrayForegroundBrush}">
+                <MenuItem.Style>
+                    <Style TargetType="MenuItem">
+                        <Style.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="{DynamicResource TrayHoverBrush}"/>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </MenuItem.Style>
+            </MenuItem>
         </ContextMenu>
 
         <!-- Window Button Styles -->

@@ -4,29 +4,15 @@
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <!-- Light Theme -->
-                <ResourceDictionary>
-                    <SolidColorBrush x:Key="BackgroundBrush" Color="#FFFFFF"/>
-                    <SolidColorBrush x:Key="ForegroundBrush" Color="#000000"/>
-                    <SolidColorBrush x:Key="BorderBrush" Color="#CCCCCC"/>
-                    <SolidColorBrush x:Key="ButtonBackgroundBrush" Color="#F0F0F0"/>
-                    <SolidColorBrush x:Key="ButtonBorderBrush" Color="#CCCCCC"/>
-                    <SolidColorBrush x:Key="ButtonHoverBrush" Color="#E0E0E0"/>
-                    <SolidColorBrush x:Key="WindowTitleBrush" Color="#FFFFFF"/>
-                    <SolidColorBrush x:Key="WindowTitleTextBrush" Color="#000000"/>
-                </ResourceDictionary>
+                <!-- Default Light Theme -->
+                <ResourceDictionary Source="Themes/LightTheme.xaml"/>
             </ResourceDictionary.MergedDictionaries>
             
             <!-- Dark Theme Resources -->
             <ResourceDictionary x:Key="DarkTheme">
-                <SolidColorBrush x:Key="BackgroundBrush" Color="#2D2D2D"/>
-                <SolidColorBrush x:Key="ForegroundBrush" Color="#FFFFFF"/>
-                <SolidColorBrush x:Key="BorderBrush" Color="#404040"/>
-                <SolidColorBrush x:Key="ButtonBackgroundBrush" Color="#404040"/>
-                <SolidColorBrush x:Key="ButtonBorderBrush" Color="#505050"/>
-                <SolidColorBrush x:Key="ButtonHoverBrush" Color="#505050"/>
-                <SolidColorBrush x:Key="WindowTitleBrush" Color="#2D2D2D"/>
-                <SolidColorBrush x:Key="WindowTitleTextBrush" Color="#FFFFFF"/>
+                <ResourceDictionary.MergedDictionaries>
+                    <ResourceDictionary Source="Themes/DarkTheme.xaml"/>
+                </ResourceDictionary.MergedDictionaries>
             </ResourceDictionary>
         </ResourceDictionary>
     </Application.Resources>

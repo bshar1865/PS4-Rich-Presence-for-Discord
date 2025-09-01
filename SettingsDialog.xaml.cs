@@ -24,9 +24,6 @@ namespace PS4RichPresence
             // Load current settings
             IPTextBox.Text = config.IP;
             IntervalTextBox.Text = config.UpdateInterval.ToString();
-            HibernateTimeTextBox.Text = config.HibernateTime.ToString();
-            RetroCoversCheckBox.IsChecked = config.RetroCovers;
-            HibernateCheckBox.IsChecked = config.Hibernate;
             ShowPresenceOnHomeCheckBox.IsChecked = config.ShowPresenceOnHome;
             ShowTimerCheckBox.IsChecked = config.ShowTimer;
             ThemeComboBox.SelectedItem = ThemeComboBox.Items.Cast<ComboBoxItem>().FirstOrDefault(item => item.Content.ToString() == config.Theme);
@@ -114,9 +111,6 @@ namespace PS4RichPresence
             {
                 Config.IP = IPTextBox.Text;
                 Config.UpdateInterval = int.Parse(IntervalTextBox.Text);
-                Config.HibernateTime = int.Parse(HibernateTimeTextBox.Text);
-                Config.RetroCovers = RetroCoversCheckBox.IsChecked ?? false;
-                Config.Hibernate = HibernateCheckBox.IsChecked ?? false;
                 Config.ShowPresenceOnHome = ShowPresenceOnHomeCheckBox.IsChecked ?? false;
                 Config.ShowTimer = ShowTimerCheckBox.IsChecked ?? false;
                 Config.Theme = ((ComboBoxItem)ThemeComboBox.SelectedItem).Content.ToString();

@@ -6,4 +6,12 @@
     <SolidColorBrush x:Key="ButtonBackgroundBrush" Color="#F0F0F0"/>
     <SolidColorBrush x:Key="ButtonBorderBrush" Color="#CCCCCC"/>
     <SolidColorBrush x:Key="ButtonHoverBrush" Color="#E0E0E0"/>
+    <SolidColorBrush x:Key="WindowTitleBrush" Color="#FFFFFF"/>
+    <SolidColorBrush x:Key="WindowTitleTextBrush" Color="#000000"/>
+    
+    <!-- System Tray Colors -->
+    <SolidColorBrush x:Key="TrayBackgroundBrush" Color="#FFFFFF"/>
+    <SolidColorBrush x:Key="TrayForegroundBrush" Color="#000000"/>
+    <SolidColorBrush x:Key="TrayHoverBrush" Color="#F0F0F0"/>
+    <SolidColorBrush x:Key="TrayBorderBrush" Color="#CCCCCC"/>
 </ResourceDictionary> 

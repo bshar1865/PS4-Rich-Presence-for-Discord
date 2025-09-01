@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
-using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -99,9 +98,6 @@ namespace PS4RichPresence
                         IP = "",
                         ClientId = 858345055966461973,
                         UpdateInterval = 120,
-                        RetroCovers = true,
-                        Hibernate = false,
-                        HibernateTime = 600,
                         ShowPresenceOnHome = true,
                         ShowTimer = false,
                         MappedGames = new List<GameInfo>()
@@ -145,7 +141,11 @@ namespace PS4RichPresence
         private void InitializeTimer()
         {
             _updateTimer = new System.Timers.Timer(_config.UpdateInterval * 1000);
-            _updateTimer.Elapsed += async (s, e) => await Dispatcher.InvokeAsync(UpdatePresence);
+            _updateTimer.Elapsed += (s, e) => 
+            {
+                // Use fire-and-forget pattern to avoid blocking
+                _ = Dispatcher.InvokeAsync(UpdatePresence);
+            };
             _updateTimer.Start();
         }
 
@@ -179,7 +179,7 @@ namespace PS4RichPresence
                     _config.IP = ip;
                     SaveConfig();
                     PS4Status.Text = $"PS4: Connected to {ip}";
-                    // Initialize timestamp when connecting
+                    // Initialize timestamp when connecting only if timer is enabled
                     if (_sessionTimestamp == null && _config.ShowTimer)
                     {
                         _sessionTimestamp = Timestamps.Now;
@@ -197,7 +197,7 @@ namespace PS4RichPresence
             return false;
         }
 
-        private async void ConnectButton_Click(object sender, RoutedEventArgs e)
+        private void ConnectButton_Click(object sender, RoutedEventArgs e)
         {
             var button = sender as System.Windows.Controls.Button;
             if (button != null)
@@ -216,7 +216,7 @@ namespace PS4RichPresence
                 }
                 else
                 {
-                    // Connect
+                    // Connect - allow connection even if PS4 is not available
                     button.IsEnabled = false;
                     button.Content = "Connecting...";
 
@@ -228,12 +228,17 @@ namespace PS4RichPresence
                             if (ConnectToPS4(_config.IP))
                             {
                                 button.Content = "Disconnect PS4";
-                                // Trigger an immediate update
-                                await Task.Run(() => Dispatcher.Invoke(UpdatePresence));
+                                // Trigger an immediate update without blocking
+                                _ = Task.Run(async () => await Dispatcher.InvokeAsync(UpdatePresence));
                             }
                             else
                             {
-                                button.Content = "Connect PS4";
+                                // PS4 not available, but still show as "connected" for Discord
+                                _ps4Connected = true;
+                                button.Content = "Disconnect PS4";
+                                PS4Status.Text = "PS4: Not Available";
+                                // Show "Not connected to PS4" on Discord without blocking
+                                _ = Task.Run(async () => await Dispatcher.InvokeAsync(UpdatePresence));
                             }
                         }
                         else
@@ -243,8 +248,8 @@ namespace PS4RichPresence
                             if (_ps4Connected)
                             {
                                 button.Content = "Disconnect PS4";
-                                // Trigger an immediate update
-                                await Task.Run(() => Dispatcher.Invoke(UpdatePresence));
+                                // Trigger an immediate update without blocking
+                                _ = Task.Run(async () => await Dispatcher.InvokeAsync(UpdatePresence));
                             }
                             else
                             {
@@ -263,16 +268,6 @@ namespace PS4RichPresence
             }
         }
 
-        private string GetLocalIPAddress()
-        {
-            using (var socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, 0))
-            {
-                socket.Connect("8.8.8.8", 65530);
-                var endPoint = socket.LocalEndPoint as IPEndPoint;
-                return endPoint?.Address.ToString() ?? "127.0.0.1";
-            }
-        }
-
         private bool TestPS4Connection(string ip)
         {
             try
@@ -280,6 +275,8 @@ namespace PS4RichPresence
                 using (var client = new FtpClient(ip))
                 {
                     client.Port = 2121;
+                    client.ConnectTimeout = 3000; // 3 second timeout for connection test
+                    client.ReadTimeout = 3000;   // 3 second timeout for connection test
                     client.Connect();
                     
                     if (!client.DirectoryExists("/mnt/sandbox/NPXS20001_000"))
@@ -337,13 +334,68 @@ namespace PS4RichPresence
                         {
                             LargeImageKey = gameInfo.ImageUrl
                         },
-                        Timestamps = _config.ShowTimer ? _sessionTimestamp : null
+                        Timestamps = _config.ShowTimer && _sessionTimestamp != null ? _sessionTimestamp : null
+                    });
+                }
+                else
+                {
+                    // PS4 not available or no game running
+                    GameName.Text = "PS4 Not Available";
+                    GameImage.Source = null;
+                    
+                    // Show "Not connected to PS4" on Discord with app.ico
+                    _discordClient.SetPresence(new RichPresence
+                    {
+                        State = "Not connected to PS4",
+                        Details = "PS4 Rich Presence",
+                        Assets = new Assets
+                        {
+                            LargeImageKey = "main_menu",
+                            LargeImageText = "PS4 Rich Presence"
+                        },
+                        Timestamps = null // No timer when not connected
                     });
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error updating presence: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                // Handle PS4 disconnection gracefully
+                if (ex.Message.Contains("Unable to connect") || ex.Message.Contains("Connection refused") || ex.Message.Contains("No connection"))
+                {
+                    // PS4 appears to be turned off or not accessible
+                    _ps4Connected = false;
+                    PS4Status.Text = "PS4: Disconnected";
+                    GameName.Text = "PS4 Not Available";
+                    GameImage.Source = null;
+                    
+                    // Update button text
+                    var connectButton = this.FindName("ConnectButton") as System.Windows.Controls.Button;
+                    if (connectButton != null)
+                    {
+                        connectButton.Content = "Connect PS4";
+                    }
+                    
+                    // Show appropriate Discord status
+                    _discordClient.SetPresence(new RichPresence
+                    {
+                        State = "PS4 appears to be turned off or is no longer on FTP",
+                        Details = "PS4 Rich Presence",
+                        Assets = new Assets
+                        {
+                            LargeImageKey = "main_menu",
+                            LargeImageText = "PS4 Rich Presence"
+                        },
+                        Timestamps = null
+                    });
+                    
+                    // Reset session timestamp
+                    _sessionTimestamp = null;
+                }
+                else
+                {
+                    // For non-connection errors, just log them without showing message boxes to avoid freezing
+                    System.Diagnostics.Debug.WriteLine($"Error updating presence: {ex.Message}");
+                }
             }
         }
 
@@ -354,6 +406,8 @@ namespace PS4RichPresence
                 using (var client = new FtpClient(_config.IP))
                 {
                     client.Port = 2121;
+                    client.ConnectTimeout = 5000; // 5 second timeout
+                    client.ReadTimeout = 5000;   // 5 second timeout
                     client.Connect();
                     var files = client.GetListing("/mnt/sandbox");
                     
@@ -401,7 +455,16 @@ namespace PS4RichPresence
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error getting game info: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                // Check if it's a connection-related error
+                if (ex.Message.Contains("Unable to connect") || ex.Message.Contains("Connection refused") || 
+                    ex.Message.Contains("No connection") || ex.Message.Contains("Timeout") ||
+                    ex.Message.Contains("timed out") || ex.Message.Contains("connection failed"))
+                {
+                    // PS4 is not accessible, throw a specific exception to be handled by UpdatePresence
+                    throw new InvalidOperationException("PS4 appears to be turned off or is no longer on FTP");
+                }
+                
+                // For other errors, just return null
                 return null;
             }
         }
@@ -440,9 +503,25 @@ namespace PS4RichPresence
             var dialog = new SettingsDialog(_config);
             if (dialog.ShowDialog() == true)
             {
+                var oldShowTimer = _config.ShowTimer;
                 _config = dialog.Config;
                 SaveConfig();
+                
+                // Update timer interval efficiently
+                if (_updateTimer != null)
+                {
+                    _updateTimer.Stop();
                 _updateTimer.Interval = _config.UpdateInterval * 1000;
+                    _updateTimer.Start();
+                }
+                
+                // Reset timestamp if timer was disabled
+                if (oldShowTimer && !_config.ShowTimer)
+                {
+                    _sessionTimestamp = null;
+                    // Update presence immediately to remove timer
+                    _ = Task.Run(async () => await Dispatcher.InvokeAsync(UpdatePresence));
+                }
             }
         }
 
@@ -556,9 +635,6 @@ namespace PS4RichPresence
         public string IP { get; set; }
         public long ClientId { get; set; }
         public int UpdateInterval { get; set; }
-        public bool RetroCovers { get; set; }
-        public bool Hibernate { get; set; }
-        public int HibernateTime { get; set; }
         public bool ShowPresenceOnHome { get; set; }
         public bool ShowTimer { get; set; }
         public List<GameInfo> MappedGames { get; set; }

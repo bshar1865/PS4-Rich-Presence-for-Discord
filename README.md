@@ -4,14 +4,15 @@ This is a forked and fully rewritten version of the original PS4 Rich Presence f
 
 ## Changes in this Fork
 - Complete rewrite in C# using WPF
-- Windows-native GUI with modern design
-- System tray integration
+- Windows-native GUI with modern design and dark mode support
+- System tray integration with theme-aware styling
 - Single-instance application handling
 - Improved and more stable PS4 connection handling
 - Automatic PS4 detection over the network
 - English-only interface
 - Custom game info editing
-- Support for PS4, PS2, and PS1 game presence
+- Support for PS4 games with automatic TMDB integration
+- Optimized performance with no UI freezing
 
 ## Features
 - Display your PS4 gaming status on Discord
@@ -19,8 +20,10 @@ This is a forked and fully rewritten version of the original PS4 Rich Presence f
 - Minimize to system tray
 - Manually or automatically update game information
 - Customizable update intervals
-- Hibernate mode support
-- Compatible with PS4, PS2, and PS1 games
+- Light and Dark theme support
+- Compatible with PS4 games (PS2/PS1 via PS4 emulation)
+- Graceful handling of PS4 disconnections
+- Timer controls for Discord presence
 
 ## Requirements
 - Windows 10/11
@@ -70,11 +73,9 @@ This project is licensed under the MIT License with permission from the original
 Feel free to submit issues or pull requests.
 
 ## Display Example
-No game 	| 	PS4 game 	|	PS2 game* 	|	PS1 game* 	|
- -----------|---------------|---------------|---------------|
- ![noGame](https://i.imgur.com/MTrBFew.png) | ![PS4Game](https://i.imgur.com/gtIW76h.png) | ![PS2Game](https://i.imgur.com/riihpST.png) | ![PS1Game](https://i.imgur.com/CRRjGFZ.png) |
-
-* PS2 and PS1 will only have custom game covers if you manually upload or [change](https://github.com/zorua98741/PS4-Rich-Presence-for-Discord/wiki#changing-image) the default
+No game 	| 	PS4 game 	|	PS4 Home Menu 	|
+ -----------|---------------|---------------|
+ ![noGame](https://i.imgur.com/MTrBFew.png) | ![PS4Game](https://i.imgur.com/gtIW76h.png) | ![PS4Home](https://i.imgur.com/riihpST.png) |
 
 ## Known Issues / Limitations
 - Putting the PS4 into rest mode or disconnecting it from the internet and then turning it back on/reconnecting it can cause the FTP server to not respond. To fix this, disable and re-enable the FTP server.
@@ -90,8 +91,6 @@ You can contact me on Discord: bshar1865
 ## Acknowledgments
 - zorua – for the original Python-based CLI implementation [GitHub](https://github.com/zorua98741/PS4-Rich-Presence-for-Discord)
 - [ORBISPatches](https://orbispatches.com/) and 0x199 – for pointing me toward using the TMDB API
-- [PS2 games.md](https://github.com/zorua98741/PS4-Rich-Presence-for-Discord/blob/main/PS2%20games.md) from [Veritas83](https://github.com/Veritas83/PS2-OPL-CFG/blob/master/test/PS2-GAMEID-TITLE-MASTER.csv)
-- [PS1 games.md](https://github.com/zorua98741/PS4-Rich-Presence-for-Discord/blob/main/PS1%20games.md) from [CRX](https://psxdatacenter.com/information.html)
 - [Tustin](https://github.com/Tustin/PlayStationDiscord-Games/blob/master/script.py) – for the TMDB hashing approach
 
 ## Support the Original Author

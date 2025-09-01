@@ -45,7 +45,7 @@
 
         <!-- Preview -->
         <TextBlock Text="Preview:" Grid.Row="3" Grid.Column="0" VerticalAlignment="Top" Margin="0,0,10,5"/>
-        <Border Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="3" BorderBrush="LightGray" BorderThickness="1">
+        <Border Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="3" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1">
             <Image x:Name="PreviewImage" Stretch="Uniform" MaxHeight="200"/>
         </Border>
 
