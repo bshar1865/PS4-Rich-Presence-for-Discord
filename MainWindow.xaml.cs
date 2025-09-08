@@ -96,10 +96,8 @@ namespace PS4RichPresence
                     _config = new Config
                     {
                         IP = "",
-                        ClientId = 858345055966461973,
-                        UpdateInterval = 120,
+                        ClientId = 1414584351571710113,
                         ShowPresenceOnHome = true,
-                        ShowTimer = false,
                         MappedGames = new List<GameInfo>()
                     };
                     SaveConfig();
