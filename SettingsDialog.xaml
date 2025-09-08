@@ -80,33 +80,20 @@
                             Foreground="{DynamicResource ForegroundBrush}"
                             BorderBrush="{DynamicResource BorderBrush}"/>
 
-                    <!-- Update Interval -->
-                    <TextBlock Text="Update Interval (seconds):" Grid.Row="1" Grid.Column="0" 
-                             VerticalAlignment="Center" Margin="0,0,10,0"
-                             Foreground="{DynamicResource ForegroundBrush}"/>
-                    <TextBox x:Name="IntervalTextBox" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" Margin="0,0,0,10"
-                             Background="{DynamicResource ButtonBackgroundBrush}"
-                             Foreground="{DynamicResource ForegroundBrush}"
-                             BorderBrush="{DynamicResource ButtonBorderBrush}"/>
-
                     <!-- Checkboxes -->
                     <CheckBox x:Name="ShowPresenceOnHomeCheckBox" Content="Show Presence on Home Screen" 
-                              Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" Margin="0,0,0,5"
-                              Foreground="{DynamicResource ForegroundBrush}"/>
-        
-                    <CheckBox x:Name="ShowTimerCheckBox" Content="Show Timer" 
-                              Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3" Margin="0,0,0,5"
+                              Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" Margin="0,0,0,5"
                               Foreground="{DynamicResource ForegroundBrush}"/>
 
                     <CheckBox x:Name="RunOnStartupCheckBox" Content="Run on Windows Startup" 
-                              Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="3" Margin="0,0,0,10"
+                              Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" Margin="0,0,0,10"
                               Foreground="{DynamicResource ForegroundBrush}"/>
 
                     <!-- Theme Selection -->
-                    <TextBlock Text="Theme:" Grid.Row="5" Grid.Column="0" 
+                    <TextBlock Text="Theme:" Grid.Row="3" Grid.Column="0" 
                              VerticalAlignment="Center" Margin="0,0,10,0"
                              Foreground="{DynamicResource ForegroundBrush}"/>
-                    <ComboBox x:Name="ThemeComboBox" Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="2">
+                    <ComboBox x:Name="ThemeComboBox" Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2">
                         <ComboBox.Template>
                             <ControlTemplate TargetType="ComboBox">
                                 <Grid>

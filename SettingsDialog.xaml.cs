@@ -23,9 +23,7 @@ namespace PS4RichPresence
 
             // Load current settings
             IPTextBox.Text = config.IP;
-            IntervalTextBox.Text = config.UpdateInterval.ToString();
             ShowPresenceOnHomeCheckBox.IsChecked = config.ShowPresenceOnHome;
-            ShowTimerCheckBox.IsChecked = config.ShowTimer;
             ThemeComboBox.SelectedItem = ThemeComboBox.Items.Cast<ComboBoxItem>().FirstOrDefault(item => item.Content.ToString() == config.Theme);
             RunOnStartupCheckBox.IsChecked = config.RunOnStartup;
 
@@ -110,9 +108,7 @@ namespace PS4RichPresence
             try
             {
                 Config.IP = IPTextBox.Text;
-                Config.UpdateInterval = int.Parse(IntervalTextBox.Text);
                 Config.ShowPresenceOnHome = ShowPresenceOnHomeCheckBox.IsChecked ?? false;
-                Config.ShowTimer = ShowTimerCheckBox.IsChecked ?? false;
                 Config.Theme = ((ComboBoxItem)ThemeComboBox.SelectedItem).Content.ToString();
                 Config.RunOnStartup = RunOnStartupCheckBox.IsChecked ?? false;
 

@@ -27,6 +27,8 @@ namespace PS4RichPresence
         private readonly HttpClient _httpClient;
         private bool _isShuttingDown;
         private Timestamps _sessionTimestamp;
+        private int _backoffStep;
+        private string _lastTitleId;
 
         public MainWindow()
         {
@@ -39,8 +41,10 @@ namespace PS4RichPresence
                 InitializeTimer();
                 InitializePS4();
 
-                // Initialize session timestamp
+                // Initialize session timestamp and last title
                 _sessionTimestamp = null;
+                _lastTitleId = null;
+                _backoffStep = 0;
 
                 // Handle window closing to minimize to tray
                 Closing += (s, e) =>
@@ -138,13 +142,30 @@ namespace PS4RichPresence
 
         private void InitializeTimer()
         {
-            _updateTimer = new System.Timers.Timer(_config.UpdateInterval * 1000);
-            _updateTimer.Elapsed += (s, e) => 
+            // Fixed, lightweight watcher interval focused on change detection
+            _updateTimer = new System.Timers.Timer(2000);
+            _updateTimer.Elapsed += (s, e) =>
             {
-                // Use fire-and-forget pattern to avoid blocking
                 _ = Dispatcher.InvokeAsync(UpdatePresence);
             };
             _updateTimer.Start();
+        }
+
+        private void SetTimerInterval(double milliseconds)
+        {
+            try
+            {
+                if (_updateTimer == null)
+                {
+                    return;
+                }
+                if (milliseconds < 500)
+                {
+                    milliseconds = 500;
+                }
+                _updateTimer.Interval = milliseconds;
+            }
+            catch { }
         }
 
         private void InitializePS4()
@@ -177,11 +198,9 @@ namespace PS4RichPresence
                     _config.IP = ip;
                     SaveConfig();
                     PS4Status.Text = $"PS4: Connected to {ip}";
-                    // Initialize timestamp when connecting only if timer is enabled
-                    if (_sessionTimestamp == null && _config.ShowTimer)
-                    {
-                        _sessionTimestamp = Timestamps.Now;
-                    }
+                    // Do not modify timestamp here; it is controlled by game change detection
+                    _backoffStep = 0;
+                    SetTimerInterval(2000);
                     return true;
                 }
             }
@@ -209,7 +228,7 @@ namespace PS4RichPresence
                     GameName.Text = "No game running";
                     GameImage.Source = null;
                     _discordClient?.ClearPresence();
-                    _sessionTimestamp = null;  // Reset timestamp on disconnect
+                    // Do not reset timestamp here; only reset on title changes
                     button.Content = "Connect PS4";
                 }
                 else
@@ -319,10 +338,11 @@ namespace PS4RichPresence
                         }
                     }
 
-                    // Initialize timestamp if not set and timer is enabled
-                    if (_sessionTimestamp == null && _config.ShowTimer)
+                    // Reset timestamp only when title changes
+                    if (!string.Equals(_lastTitleId, gameInfo.TitleId, StringComparison.Ordinal))
                     {
                         _sessionTimestamp = Timestamps.Now;
+                        _lastTitleId = gameInfo.TitleId;
                     }
 
                     _discordClient.SetPresence(new RichPresence
@@ -332,8 +352,12 @@ namespace PS4RichPresence
                         {
                             LargeImageKey = gameInfo.ImageUrl
                         },
-                        Timestamps = _config.ShowTimer && _sessionTimestamp != null ? _sessionTimestamp : null
+                        Timestamps = _sessionTimestamp
                     });
+
+                    // Fast polling when a game is detected
+                    _backoffStep = 0;
+                    SetTimerInterval(2000);
                 }
                 else
                 {
@@ -351,8 +375,12 @@ namespace PS4RichPresence
                             LargeImageKey = "idle",
                             LargeImageText = "Idle"
                         },
-                        Timestamps = null // No timer when not connected
+                        Timestamps = null
                     });
+
+                    // Moderate polling when idle/home or unknown
+                    _backoffStep = 0;
+                    SetTimerInterval(4000);
                 }
             }
             catch (Exception ex)
@@ -386,8 +414,16 @@ namespace PS4RichPresence
                         Timestamps = null
                     });
                     
-                    // Reset session timestamp
-                    _sessionTimestamp = null;
+                    // Keep timestamp; only reset on title change
+
+                    // Exponential backoff up to 30s when offline
+                    _backoffStep = Math.Min(_backoffStep + 1, 5);
+                    var interval = 2000 * Math.Pow(2, _backoffStep); // 2s,4s,8s,16s,32s
+                    if (interval > 30000)
+                    {
+                        interval = 30000;
+                    }
+                    SetTimerInterval(interval);
                 }
                 else
                 {
@@ -501,25 +537,10 @@ namespace PS4RichPresence
             var dialog = new SettingsDialog(_config);
             if (dialog.ShowDialog() == true)
             {
-                var oldShowTimer = _config.ShowTimer;
                 _config = dialog.Config;
                 SaveConfig();
-                
-                // Update timer interval efficiently
-                if (_updateTimer != null)
-                {
-                    _updateTimer.Stop();
-                _updateTimer.Interval = _config.UpdateInterval * 1000;
-                    _updateTimer.Start();
-                }
-                
-                // Reset timestamp if timer was disabled
-                if (oldShowTimer && !_config.ShowTimer)
-                {
-                    _sessionTimestamp = null;
-                    // Update presence immediately to remove timer
-                    _ = Task.Run(async () => await Dispatcher.InvokeAsync(UpdatePresence));
-                }
+                // Apply any UI-related settings and refresh presence
+                _ = Task.Run(async () => await Dispatcher.InvokeAsync(UpdatePresence));
             }
         }
 
@@ -632,9 +653,7 @@ namespace PS4RichPresence
     {
         public string IP { get; set; }
         public long ClientId { get; set; }
-        public int UpdateInterval { get; set; }
         public bool ShowPresenceOnHome { get; set; }
-        public bool ShowTimer { get; set; }
         public List<GameInfo> MappedGames { get; set; }
         public string Theme { get; set; } = "Light"; // Light or Dark
         public bool RunOnStartup { get; set; } = false;
