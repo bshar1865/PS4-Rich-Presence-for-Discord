@@ -458,7 +458,7 @@ namespace PS4RichPresence
                             {
                                 TitleId = "main_menu",
                                 Name = "PS4 Home Menu",
-                                ImageUrl = "main_menu"
+                                ImageUrl = "idle"
                             };
                         }
                         return null;
