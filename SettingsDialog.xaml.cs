@@ -24,8 +24,10 @@ namespace PS4RichPresence
             // Load current settings
             IPTextBox.Text = config.IP;
             ShowPresenceOnHomeCheckBox.IsChecked = config.ShowPresenceOnHome;
+            ShowPresenceWhenIdleCheckBox.IsChecked = config.ShowPresenceWhenIdle;
             ThemeComboBox.SelectedItem = ThemeComboBox.Items.Cast<ComboBoxItem>().FirstOrDefault(item => item.Content.ToString() == config.Theme);
             RunOnStartupCheckBox.IsChecked = config.RunOnStartup;
+            AutoConnectOnStartupCheckBox.IsChecked = config.AutoConnectOnStartup;
 
             // Check actual registry state
             using (var key = Registry.CurrentUser.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Run"))
@@ -109,8 +111,10 @@ namespace PS4RichPresence
             {
                 Config.IP = IPTextBox.Text;
                 Config.ShowPresenceOnHome = ShowPresenceOnHomeCheckBox.IsChecked ?? false;
+                Config.ShowPresenceWhenIdle = ShowPresenceWhenIdleCheckBox.IsChecked ?? false;
                 Config.Theme = ((ComboBoxItem)ThemeComboBox.SelectedItem).Content.ToString();
                 Config.RunOnStartup = RunOnStartupCheckBox.IsChecked ?? false;
+                Config.AutoConnectOnStartup = AutoConnectOnStartupCheckBox.IsChecked ?? false;
 
                 // Handle startup registry
                 using (var key = Registry.CurrentUser.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Run", true))
@@ -118,7 +122,7 @@ namespace PS4RichPresence
                     if (Config.RunOnStartup)
                     {
                         var exePath = System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName;
-                        key.SetValue("PS4 Rich Presence", exePath);
+                        key.SetValue("PS4 Rich Presence", $"\"{exePath}\" /startup");
                     }
                     else
                     {

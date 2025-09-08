@@ -17,6 +17,14 @@ namespace PS4RichPresence
 
         protected override void OnStartup(StartupEventArgs e)
         {
+            // Set up config directory at the beginning
+            var documentsPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+            var configDir = Path.Combine(documentsPath, "PS4RPD-Config");
+            if (!Directory.Exists(configDir))
+            {
+                Directory.CreateDirectory(configDir);
+            }
+            
             try
             {
                 // Try to create the pipe server
@@ -44,29 +52,44 @@ namespace PS4RichPresence
                     }
                 }
 
-                File.WriteAllText("startup.log", "Application starting...\n");
+                var startupLogPath = Path.Combine(configDir, "startup.log");
+                File.WriteAllText(startupLogPath, "Application starting...\n");
                 
                 AppDomain.CurrentDomain.UnhandledException += (sender, args) =>
                 {
-                    File.WriteAllText("crash.log", args.ExceptionObject.ToString());
+                    var crashLogPath = Path.Combine(configDir, "crash.log");
+                    File.WriteAllText(crashLogPath, args.ExceptionObject.ToString());
                     MessageBox.Show($"An error occurred: {args.ExceptionObject}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 };
 
                 this.DispatcherUnhandledException += (sender, args) =>
                 {
-                    File.WriteAllText("crash.log", args.Exception.ToString());
+                    var crashLogPath = Path.Combine(configDir, "crash.log");
+                    File.WriteAllText(crashLogPath, args.Exception.ToString());
                     MessageBox.Show($"An error occurred: {args.Exception}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                     args.Handled = true;
                 };
 
                 _mainWindow = new MainWindow();
                 MainWindow = _mainWindow;
-                _mainWindow.Show();
+                
+                // Check if this is a startup launch
+                bool isStartupLaunch = e.Args.Length > 0 && e.Args[0] == "/startup";
+                
+                if (isStartupLaunch)
+                {
+                    // Don't show window on startup, it will be minimized to tray
+                    _mainWindow.WindowState = WindowState.Minimized;
+                }
+                else
+                {
+                    _mainWindow.Show();
+                }
 
                 base.OnStartup(e);
 
                 // Load theme from config if it exists
-                var configPath = "ps4rpd_config.json";
+                var configPath = Path.Combine(configDir, "ps4rpd_config.json");
                 if (File.Exists(configPath))
                 {
                     try
@@ -100,7 +123,9 @@ namespace PS4RichPresence
             }
             catch (Exception ex)
             {
-                File.WriteAllText("error.log", $"Startup error: {ex}\n{ex.StackTrace}");
+                // Use the same configDir that was already created above
+                var errorLogPath = Path.Combine(configDir, "error.log");
+                File.WriteAllText(errorLogPath, $"Startup error: {ex}\n{ex.StackTrace}");
                 MessageBox.Show($"Error during startup: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 Current.Shutdown();
             }

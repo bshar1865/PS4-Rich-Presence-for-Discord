@@ -85,15 +85,23 @@
                               Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" Margin="0,0,0,5"
                               Foreground="{DynamicResource ForegroundBrush}"/>
 
+                    <CheckBox x:Name="ShowPresenceWhenIdleCheckBox" Content="Show Rich Presence when PS4 is idle/not connected" 
+                              Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" Margin="0,0,0,5"
+                              Foreground="{DynamicResource ForegroundBrush}"/>
+
                     <CheckBox x:Name="RunOnStartupCheckBox" Content="Run on Windows Startup" 
-                              Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" Margin="0,0,0,10"
+                              Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3" Margin="0,0,0,5"
+                              Foreground="{DynamicResource ForegroundBrush}"/>
+
+                    <CheckBox x:Name="AutoConnectOnStartupCheckBox" Content="Automatically connect PS4 on PC startup" 
+                              Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="3" Margin="0,0,0,10"
                               Foreground="{DynamicResource ForegroundBrush}"/>
 
                     <!-- Theme Selection -->
-                    <TextBlock Text="Theme:" Grid.Row="3" Grid.Column="0" 
+                    <TextBlock Text="Theme:" Grid.Row="5" Grid.Column="0" 
                              VerticalAlignment="Center" Margin="0,0,10,0"
                              Foreground="{DynamicResource ForegroundBrush}"/>
-                    <ComboBox x:Name="ThemeComboBox" Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2">
+                    <ComboBox x:Name="ThemeComboBox" Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="2">
                         <ComboBox.Template>
                             <ControlTemplate TargetType="ComboBox">
                                 <Grid>
