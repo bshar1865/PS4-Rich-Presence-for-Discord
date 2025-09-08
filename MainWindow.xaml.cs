@@ -345,11 +345,11 @@ namespace PS4RichPresence
                     _discordClient.SetPresence(new RichPresence
                     {
                         State = "Not connected to PS4",
-                        Details = "PS4 Rich Presence",
+                        Details = "Idle",
                         Assets = new Assets
                         {
-                            LargeImageKey = "main_menu",
-                            LargeImageText = "PS4 Rich Presence"
+                            LargeImageKey = "idle",
+                            LargeImageText = "Idle"
                         },
                         Timestamps = null // No timer when not connected
                     });
@@ -377,11 +377,11 @@ namespace PS4RichPresence
                     _discordClient.SetPresence(new RichPresence
                     {
                         State = "PS4 appears to be turned off or is no longer on FTP",
-                        Details = "PS4 Rich Presence",
+                        Details = "Idle",
                         Assets = new Assets
                         {
-                            LargeImageKey = "main_menu",
-                            LargeImageText = "PS4 Rich Presence"
+                            LargeImageKey = "idle",
+                            LargeImageText = "Idle"
                         },
                         Timestamps = null
                     });
