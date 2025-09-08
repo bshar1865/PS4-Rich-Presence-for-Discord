@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="app.ico" alt="App Icon" width="96" height="96" />
+</p>
+
 # PS4 Rich Presence for Discord
 
 This is a forked and fully rewritten version of the original PS4 Rich Presence for Discord, now implemented in C# with a modern Windows-native GUI. The original was a Python-based CLI tool without a graphical interface.
@@ -19,11 +23,11 @@ This is a forked and fully rewritten version of the original PS4 Rich Presence f
 - Auto-detects PS4 on the network
 - Minimize to system tray
 - Manually or automatically update game information
-- Customizable update intervals
+- Adaptive, event-like updates (fast on game, moderate on idle, backoff offline)
 - Light and Dark theme support
 - Compatible with PS4 games (PS2/PS1 via PS4 emulation)
 - Graceful handling of PS4 disconnections
-- Timer controls for Discord presence
+- Persistent timestamps that only reset on game change (per Discord policy)
 
 ## Requirements
 - Windows 10/11
@@ -92,7 +96,7 @@ You can contact me on Discord: bshar1865
 - zorua – for the original Python-based CLI implementation [GitHub](https://github.com/zorua98741/PS4-Rich-Presence-for-Discord)
 - [ORBISPatches](https://orbispatches.com/) and 0x199 – for pointing me toward using the TMDB API
 - [Tustin](https://github.com/Tustin/PlayStationDiscord-Games/blob/master/script.py) – for the TMDB hashing approach
-
+- [50n50](https://github.com/50n50) – huge thanks to my beloved friend 50n50 for the the app icons
 ## Support the Original Author
 Support zorua on Ko-fi: https://ko-fi.com/N4N87V7K5
 
